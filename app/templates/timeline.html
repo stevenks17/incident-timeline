@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Incident Timeline</title>
+  <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+  <link href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" rel="stylesheet">
+</head>
+<body>
+  <div id="timeline-embed" style="width: 100%; height: 600px"></div>
+  <script type="text/javascript">
+    var additionalOptions = {
+      initial_zoom: 2
+    }
+    var timeline_json = {
+      "title": {
+        "text": {
+          "headline": "Incident Timeline",
+          "text": "Security incidents displayed in a timeline"
+        }
+      },
+      "events": []
+    };
+    window.timeline = new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
+  </script>
+</body>
+</html>
