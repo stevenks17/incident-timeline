@@ -2,3 +2,4 @@ flask
 pandas
 requests
 rich
+python-dotenv
