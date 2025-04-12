@@ -13,20 +13,18 @@ def get_last_updated():
 
 @main.route('/')
 def index():
-  last_updated = get_last_updated
+  last_updated = get_last_updated()
   return render_template('timeline.html', last_updated=last_updated)
+@main.route('/last-updated')
+
+def last_updated():
+    return get_last_updated()
 
 @main.route('/data')
 def data():
   logs = load_logs()
   normalized_logs = normalize_logs(logs)
   timeline_data = {
-    "title":{
-      "text":{
-        "headline": "Incident Timeline",
-        "text": "Live data from AbuseIPDB"
-      }
-    },
     "events": normalized_logs
   }
   return jsonify(timeline_data)

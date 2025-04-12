@@ -4,23 +4,99 @@
   <title>Incident Timeline</title>
   <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
   <link href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" rel="stylesheet">
-</head>
-<body>
-  <div id="timeline-embed" style="width: 100%; height: 600px"></div>
-  <script type="text/javascript">
-    var additionalOptions = {
-      initial_zoom: 2
+  <style>
+    .tl-slide-content {
+      font-size: 16px;
+      line-height: 1.5;
     }
-    var timeline_json = {
-      "title": {
-        "text": {
-          "headline": "Incident Timeline",
-          "text": "Security incidents displayed in a timeline"
-        }
-      },
-      "events": []
-    };
-    window.timeline = new TL.Timeline('timeline-embed', timeline_json, additionalOptions);
+  
+    .tl-timeline {
+      background-color: #f9f9f9;
+    }
+  
+    .tl-headline-title {
+      font-size: 18px !important;
+      font-weight: bold;
+    }
+  
+    .tl-slide-background {
+      opacity: 0.8;
+    }
+  </style>
+  
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+  <h1 style="text-align: center;">🚨 Incident Timeline 🚨</h1>
+  <p style="text-align: center; font-size: 16px; color: gray;">
+    Simulated Security Incident Flow — Live Incident Progression
+  </p>
+
+  <p style="text-align: center; font-size: 14px;" id="last-updated">
+    Last updated: {{ last_updated }}
+  </p>
+
+  <div style="text-align: center; margin-bottom: 10px;">
+    <button onclick="loadTimeline()">Show All</button>
+    <button onclick="loadTimeline('critical')">Critical Only</button>
+    <button onclick="loadTimeline('suspicious')">Suspicious Only</button>
+  </div>
+  <div style="text-align: center; margin-bottom: 10px;">
+    <strong>Legend:</strong>
+    <span style="color: red; margin-right: 10px;">■ Critical</span>
+    <span style="color: orange; margin-right: 10px;">■ Suspicious</span>
+    <span style="color: gray;">■ Noise</span>
+  </div>
+  
+  <div id="timeline-embed" style="width: 100%; height: 600px; margin-top: 20px;"></div>
+
+  <script type="text/javascript">
+    function loadTimeline(filterSeverity = null) {
+      fetch('/data')
+        .then(response => response.json())
+        .then(timeline_json => {
+          timeline_json.events = timeline_json.events.filter(event => {
+            if (!filterSeverity) return true;
+            return event.severity === filterSeverity;
+          });
+
+          timeline_json.events.forEach(event => {
+            let color;
+            switch (event.severity) {
+              case "critical":
+                color = "red";
+                break;
+              case "suspicious":
+                color = "orange";
+                break;
+              case "noise":
+                color = "gray";
+                break;
+              default:
+                color = "blue";
+            }
+            event.background = { color: color };
+          });
+
+          window.timeline = new TL.Timeline('timeline-embed', timeline_json, { initial_zoom: 2 });
+          setTimeout(() => {
+            const latestEvent = document.querySelector('.tl-slide-content:last-child');
+            if (latestEvent) {
+              latestEvent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 1000)
+        });
+    }
+    function updateLastUpdated(){
+      fetch('/last-updated')
+      .then(response => response.text())
+      .then(text => {
+        document.getElementById('last-updated').innerText = "Last updated: " + text;
+      })
+    }
+    updateLastUpdated();
+    loadTimeline();
+    setInterval(loadTimeline, 30000); 
   </script>
 </body>
+
 </html>
